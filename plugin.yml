@@ -1,0 +1,10 @@
+name: Reward
+version: 0.1
+author: creekorful
+description: basic minecraft plugin that add reward in game
+main: fr.creekorful.reward.Reward
+
+commands:
+   reward:
+      description: Main command
+      usage: /reward <add/remove/list> [player] [HIGH/NORMAL/LOW] [bouty amount]
