@@ -6,5 +6,24 @@ main: fr.creekorful.reward.Reward
 
 commands:
    reward:
-      description: Main command
-      usage: /reward <add/remove/list> [player] [HIGH/NORMAL/LOW] [bouty amount]
+      description: reward command
+
+   reward add:
+      description: Add player to reward list
+      usage: /reward <add> [player] [HIGH/NORMAL/LOW] [bouty amount]
+
+   reward remove:
+      description: Remove player from reward list
+      usage: /reward remove <player>
+
+   reward list:
+      description: list all rewarded player
+      usage: /reward list
+
+   reward save:
+      description: save all vectors to file
+      usage: /reward save
+
+   reward reload:
+      description: load all vector from file
+      usage: /reward reload

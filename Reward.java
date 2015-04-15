@@ -43,12 +43,31 @@ public class Reward extends JavaPlugin
             }
         }
 
-        getLogger().info("Enable Reward " + version + " !");
+        getLogger().info("Reward " + version + " enabled !");
     }
 
     @Override
     public void onDisable() {
         getLogger().info("Disable Reward " + version + " !");
+
+        FileWriter rewardWriter;
+        try {
+
+            rewardWriter = new FileWriter("plugins/Reward/" + rewardFileName);
+
+            BufferedWriter rewardBufferedWriter = new BufferedWriter(rewardWriter);
+
+            for(int i = 0; i < rewardPlayerName.size(); i++){
+                rewardBufferedWriter.write(rewardPlayerName.get(i) + ":" + rewardPlayerSeverity.get(i) + ":" + rewardPlayerAmount.get(i));
+                rewardBufferedWriter.newLine();
+            }
+            rewardBufferedWriter.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        saveDefaultConfig();
     }
 
     @Override
@@ -56,7 +75,12 @@ public class Reward extends JavaPlugin
     {
         if (cmd.getName().equalsIgnoreCase("reward")) { // If the player typed /reward then do the following...
 
-            if(!args[0].equals("list") || !args[0].equals("add") || !args[0].equals("remove")) //if the command is unknow
+            if(args.length == 0){
+                getLogger().info("Error correct usage /reward add ; /reward remove ; /reward list");
+                return false;
+            }
+
+            if(!args[0].equals("list") && !args[0].equals("add") && !args[0].equals("remove")) //if the command is unknow
                 getLogger().info("Unknow command. Command are /list ; /add ; /remove");
 
             if(args[0].equals("list")) {
@@ -68,19 +92,57 @@ public class Reward extends JavaPlugin
             {
                 if (args[0].equals("add")) {
                     if (args.length == 4) {
-                        func.addPlayerToRewardList(args[1], args[2], args[3]);
+                        func.addPlayerToRewardList(sender, args[1], args[2], args[3]);
                         return true;
                     }
-                    else
-                        getLogger().info("Error, correct usage: /reward add <playername> <severity: (HIGH/NORMAL/LOW)> <amount>");
 
                 } else if (args[0].equals("remove")) {
                     if (args.length == 2) {
-                        func.removePlayerFromRewardList(args[1]);
+                        func.removePlayerFromRewardList(sender, args[1]);
                         return true;
                     }
+                }
 
-                    else getLogger().info("Error, correct usage /reward remove <playername>");
+                else if(args[0].equals("save"))
+                {
+                    FileWriter rewardWriter;
+                    try {
+
+                        rewardWriter = new FileWriter("plugins/Reward/" + rewardFileName);
+
+                        BufferedWriter rewardBufferedWriter = new BufferedWriter(rewardWriter);
+
+                        for(int i = 0; i < rewardPlayerName.size(); i++){
+                            rewardBufferedWriter.write(rewardPlayerName.get(i) + ":" + rewardPlayerSeverity.get(i) + ":" + rewardPlayerAmount.get(i));
+                            rewardBufferedWriter.newLine();
+                        }
+                        rewardBufferedWriter.close();
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                else if(args[0].equals("reload"))
+                {
+
+                    try {
+
+                        BufferedReader waterBufRead = new BufferedReader(new InputStreamReader(new FileInputStream("plugins/Reward/" + rewardFileName)));
+                        String currentLine;
+
+                        //READ FILE AND PUT INTO ARRAYS
+                        rewardPlayerName.clear();
+                        rewardPlayerSeverity.clear();
+                        rewardPlayerAmount.clear();
+                        
+                        while((currentLine = waterBufRead.readLine())!= null){
+                            func.initRewardList(currentLine);
+                        }
+                        waterBufRead.close();
+
+                    } catch (IOException e) { //si on n'arrive pas a ouvrir les fichiers
+                    }
                 }
             }
             else getLogger().info("Error this command require op right !");
